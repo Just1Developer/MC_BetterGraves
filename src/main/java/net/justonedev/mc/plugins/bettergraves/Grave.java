@@ -149,7 +149,7 @@ public class Grave {
 				if(BetterGraves.DropItemsIfInventoryFull)
 				{
 					for (ItemStack drop : LeftOvers) {
-						p.getWorld().dropItemNaturally(p.getLocation(), drop);
+						p.getWorld().dropItemNaturally(Location, drop);
 					}
 					p.sendMessage(Config.MSG_SOME_ITEMS_DROPPED);
 				}
