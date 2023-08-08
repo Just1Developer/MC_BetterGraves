@@ -120,16 +120,17 @@ public class Graves implements Listener {
 		}
 		
 		boolean isObstructedFeet = !DeathLoc.getBlock().getType().isAir();
-		boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
+		boolean isObstructedBeneath = !DeathLoc.clone().subtract(0, 1, 0).getBlock().getType().isAir();
 		if (!isObstructedFeet && isObstructedBeneath)
 		{
 			return DeathLoc;
 		}
-		boolean isObstructedHead = !DeathLoc.clone().add(0, 2, 1).getBlock().getType().isAir();
+		// Undo subtraction
+		boolean isObstructedHead = !DeathLoc.clone().add(0, 1, 1).getBlock().getType().isAir();
 		// Feet are obstructed
 		if (!isObstructedHead)
 		{
-			return DeathLoc.add(0, 1, 0);
+			return DeathLoc;
 		}
 		
 		World w = DeathLoc.getWorld();
