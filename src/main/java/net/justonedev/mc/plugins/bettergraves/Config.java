@@ -25,6 +25,7 @@ public class Config {
 		{
 			cfg.options().copyDefaults(true);
 			cfg.addDefault("Drop Items if the Inventory is full", true);
+			cfg.addDefault("Enforce (Re-equip) Curse of Binding instead of currently worn armor", true);
 			cfg.addDefault("Grave protection expires", true);
 			cfg.addDefault("Grave protection time (minutes)", 15);
 			cfg.addDefault("Maximum Search Range", 700);
@@ -56,6 +57,7 @@ public class Config {
 		BetterGraves.GraveLifetimeMS = GraveLifetimeMinutes * 60000;
 		BetterGraves.GraveProtExpires = cfg.getBoolean("Grave protection expires");
 		BetterGraves.DropItemsIfInventoryFull = cfg.getBoolean("Drop Items if the Inventory is full");
+		BetterGraves.EnforceBindingCurse = cfg.getBoolean("Enforce (Re-equip) Curse of Binding instead of currently worn armor");
 		BetterGraves.MaxRange = cfg.getInt("Maximum Search Range");
 		BetterGraves.GravePurgeOlderThanMS = cfg.getInt("Maximum Search Range") * 3600000L;
 		

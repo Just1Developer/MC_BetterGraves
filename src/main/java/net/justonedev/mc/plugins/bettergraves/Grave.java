@@ -93,38 +93,37 @@ public class Grave {
 		
 		//Alternative to swapping like below: pre-define LeftOvers and LeftOvers.put(slot + 20, p.getInventory().getItem(slot));	// An index that will not occur in addItem return value because the index does not exist as slot
 		
-		// First, Handle worn curse of binding armor, so swap them with current armor before adding
-		int slot = 36;
-		if(hasCurseOfBinding(Inventory.getItem(slot)))
+		if(BetterGraves.EnforceBindingCurse)
 		{
-			// Swap
-			ItemStack binding = Inventory.getItem(slot);
-			Inventory.setItem(slot, p.getInventory().getItem(slot));
-			p.getInventory().setItem(slot, binding);
-		}
-		++slot;
-		if(hasCurseOfBinding(Inventory.getItem(slot)))
-		{
-			// Swap
-			ItemStack binding = Inventory.getItem(slot);
-			Inventory.setItem(slot, p.getInventory().getItem(slot));
-			p.getInventory().setItem(slot, binding);
-		}
-		++slot;
-		if(hasCurseOfBinding(Inventory.getItem(slot)))
-		{
-			// Swap
-			ItemStack binding = Inventory.getItem(slot);
-			Inventory.setItem(slot, p.getInventory().getItem(slot));
-			p.getInventory().setItem(slot, binding);
-		}
-		++slot;
-		if(hasCurseOfBinding(Inventory.getItem(slot)))
-		{
-			// Swap
-			ItemStack binding = Inventory.getItem(slot);
-			Inventory.setItem(slot, p.getInventory().getItem(slot));
-			p.getInventory().setItem(slot, binding);
+			// First, Handle worn curse of binding armor, so swap them with current armor before adding
+			int slot = 36;
+			if (hasCurseOfBinding(Inventory.getItem(slot))) {
+				// Swap
+				ItemStack binding = Inventory.getItem(slot);
+				Inventory.setItem(slot, p.getInventory().getItem(slot));
+				p.getInventory().setItem(slot, binding);
+			}
+			++slot;
+			if (hasCurseOfBinding(Inventory.getItem(slot))) {
+				// Swap
+				ItemStack binding = Inventory.getItem(slot);
+				Inventory.setItem(slot, p.getInventory().getItem(slot));
+				p.getInventory().setItem(slot, binding);
+			}
+			++slot;
+			if (hasCurseOfBinding(Inventory.getItem(slot))) {
+				// Swap
+				ItemStack binding = Inventory.getItem(slot);
+				Inventory.setItem(slot, p.getInventory().getItem(slot));
+				p.getInventory().setItem(slot, binding);
+			}
+			++slot;
+			if (hasCurseOfBinding(Inventory.getItem(slot))) {
+				// Swap
+				ItemStack binding = Inventory.getItem(slot);
+				Inventory.setItem(slot, p.getInventory().getItem(slot));
+				p.getInventory().setItem(slot, binding);
+			}
 		}
 		
 		// First, loop through the inventory and set all items to their respective slots, then handle the leftovers

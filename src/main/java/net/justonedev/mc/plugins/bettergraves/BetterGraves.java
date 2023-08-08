@@ -30,6 +30,7 @@ public final class BetterGraves extends JavaPlugin implements Listener, CommandE
 	
 	public static boolean GraveProtExpires = true;
 	public static boolean DropItemsIfInventoryFull = true;
+	public static boolean EnforceBindingCurse = true;
 	
 	@Override
 	public void onEnable() {
