@@ -41,7 +41,7 @@ public class GraveExpiration {
 	public static boolean isExpired(Location loc)
 	{
 		// ExpirationTime is 0 if its not in the HashMap I think
-		if (!ExpirationTimes.containsKey(loc)) return false;		// If the server crashes, all graves gain immortality status
+		if (!ExpirationTimes.containsKey(loc)) return true;
 		return ExpirationTimes.get(loc) < System.currentTimeMillis();
 	}
 	
