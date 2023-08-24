@@ -92,7 +92,7 @@ public final class BetterGraves extends JavaPlugin implements Listener, CommandE
 		
 		for(int i = 0; i < e.blockList().size(); i++)
 		{
-			if(!Graves.containsKey(e.blockList().get(i))) continue;
+			if(!Graves.containsKey(e.blockList().get(i).getLocation())) continue;
 			e.blockList().remove(i);
 			i--;	// re-run the index
 		}
