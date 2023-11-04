@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.*;
 
-public final class BetterGraves extends JavaPlugin implements Listener, CommandExecutor {
+public final class BetterGraves extends JavaPlugin implements Listener {
 	
 	public static BetterGraves instance;
 	static HashMap<Location, Grave> Graves;
@@ -43,6 +44,7 @@ public final class BetterGraves extends JavaPlugin implements Listener, CommandE
 		Config.Load();
 		
 		getCommand("purgeoldgraves").setExecutor(this);
+		getCommand("gravelist").setExecutor(new Gravelist());
 		
 		// Load all graves. Since they aren't changed and only created once somewhere else, there is no need to export them on shutdown
 		File folder = new File(getDataFolder() + "/graves/");
@@ -86,14 +88,24 @@ public final class BetterGraves extends JavaPlugin implements Listener, CommandE
 	}
 	
 	@EventHandler
-	public void coreProtection(EntityExplodeEvent e)
+	public void entityExplodeProtection(EntityExplodeEvent e)
 	{
-		if(e.isCancelled()) return;
+		coreProtection(e.isCancelled(), e.blockList());
+	}
+	
+	@EventHandler
+	public void bedExplodeProtection(BlockExplodeEvent e)
+	{
+		coreProtection(e.isCancelled(), e.blockList());
+	}
+	
+	private void coreProtection(boolean cancelled, List<Block> blocks) {
+		if(cancelled) return;
 		
-		for(int i = 0; i < e.blockList().size(); i++)
+		for(int i = 0; i < blocks.size(); i++)
 		{
-			if(!Graves.containsKey(e.blockList().get(i).getLocation())) continue;
-			e.blockList().remove(i);
+			if(!Graves.containsKey(blocks.get(i).getLocation())) continue;
+			blocks.remove(i);
 			i--;	// re-run the index
 		}
 	}
