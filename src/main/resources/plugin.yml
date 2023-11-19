@@ -1,5 +1,5 @@
 name: BetterGraves
-version: '1.1-RELEASE'
+version: '1.1a-RELEASE'
 main: net.justonedev.mc.plugins.bettergraves.BetterGraves
 api-version: '1.20'
 prefix: JustOneDeveloper's BetterGraves

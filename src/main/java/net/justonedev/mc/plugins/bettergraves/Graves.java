@@ -23,6 +23,9 @@ import static net.justonedev.mc.plugins.bettergraves.BetterGraves.floor;
 
 public class Graves implements Listener {
 
+	private static final int OFFSET_WORLDLOC_MAXHEIGHT = 1;	// Subtract 1 because world max height is 1 more than build height
+	private static final int OFFSET_WORLDLOC_MINHEIGHT = 2;	// Add 2, +1 because we check the block underneath too and +1 because we want to leave the lowest bedrock layer (always obstructed) alone (not consider it)
+	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e)
 	{
@@ -115,8 +118,8 @@ public class Graves implements Listener {
 		// Since we're always searching the block beneath too, DeathLoc cant be minHeight
 		if(DeathLoc.getWorld() != null)
 		{
-			if(DeathLoc.getBlockY() <= DeathLoc.getWorld().getMinHeight()) DeathLoc.setY(DeathLoc.getWorld().getMinHeight() + 1);
-			else if(DeathLoc.getBlockY() > DeathLoc.getWorld().getMaxHeight()) DeathLoc.setY(DeathLoc.getWorld().getMaxHeight());
+			if(DeathLoc.getBlockY() <= DeathLoc.getWorld().getMinHeight()) DeathLoc.setY(DeathLoc.getWorld().getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT);		// +1 for block beneath and also +1 for the bottom bedrock layer
+			else if(DeathLoc.getBlockY() >= DeathLoc.getWorld().getMaxHeight()) DeathLoc.setY(DeathLoc.getWorld().getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT);	// MaxHeight = 320 even though max building height is 319 lol
 		}
 		
 		boolean isObstructedFeet = !DeathLoc.getBlock().getType().isAir();
@@ -187,17 +190,10 @@ public class Graves implements Listener {
 	private static Location findGraveLocationNoCeilingSearchPillar(World w, Location OGDeathLoc, int offsetX, int offsetZ)
 	{
 		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
-		DeathLoc.setY(w.getMaxHeight());
-		while (DeathLoc.getBlockY() > w.getMinHeight())	// not >= because we always need a block below
+		DeathLoc.setY(w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT);		// Adjust height accordingly
+		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT)	// Offset for min height
 		{
-			boolean isObstructedLoc = !DeathLoc.getBlock().getType().isAir();
-			boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
-			if (!isObstructedLoc && isObstructedBeneath)
-			{
-				// Get Block on ground
-				DeathLoc.add(0, 1, 0);
-				return DeathLoc;
-			}
+			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
 		}
 		return null;
 	}
@@ -231,112 +227,33 @@ public class Graves implements Listener {
 	private static Location findGraveLocationCeilingSearchPillar(World w, Location OGDeathLoc, int offsetX, int offsetZ)
 	{
 		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
-		while(DeathLoc.getBlockY() <= w.getMaxHeight())	// not >= because we always need a block below
+		while(DeathLoc.getBlockY() <= w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT)	// not >= because we always need a block below
 		{
-			boolean isObstructedLoc = !DeathLoc.getBlock().getType().isAir();
-			boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
-			if (!isObstructedLoc && isObstructedBeneath)
-			{
-				// Get Block on ground
-				DeathLoc.add(0, 1, 0);
-				return DeathLoc;
-			}
+			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
 			DeathLoc.add(0, 2, 0);	// Go up first
 		}
 		
 		// Could not find above, now below
 		
 		DeathLoc = OGDeathLoc.clone().add(offsetX, -1, offsetZ);
-		while (DeathLoc.getBlockY() > w.getMinHeight())	// not >= because we always need a block below
+		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT)
 		{
-			boolean isObstructedLoc = !DeathLoc.getBlock().getType().isAir();
-			boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
-			if (!isObstructedLoc && isObstructedBeneath)
-			{
-				// Get Block on ground
-				DeathLoc.add(0, 1, 0);
-				return DeathLoc;
-			}
+			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
 		}
 		
 		return null;
 	}
-
+	
+	private static boolean pillarCeilingObstructionCheck(Location deathLoc) {
+		boolean isObstructedLoc = !deathLoc.getBlock().getType().isAir();
+		boolean isObstructedBeneath = !deathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
+		if (!isObstructedLoc && isObstructedBeneath)
+		{
+			// Get Block on ground
+			deathLoc.add(0, 1, 0);
+			return true;
+		}
+		return false;
+	}
+	
 }
-
-/* Old: Recursive Approach
-	static final int maxDepth = 2500;	// 2500 should also be enough for islands
-	
-	private static Location findGraveLocationNoCeiling(World w, Location OGDeathLoc, int offsetX, int offsetZ, int depth)
-	{
-		if (depth > maxDepth) return null;	// Could not find a location, sorry
-		System.out.println("New Depth: " + depth);
-		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
-		DeathLoc.setY(w.getMaxHeight());
-		while (DeathLoc.getBlockY() > w.getMinHeight())	// not >= because we always need a block below
-		{
-			boolean isObstructedLoc = !DeathLoc.getBlock().getType().isAir();
-			boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
-			if (!isObstructedLoc && isObstructedBeneath)
-			{
-				// Get Block on ground
-				DeathLoc.add(0, 1, 0);
-				return DeathLoc;
-			}
-		}
-		
-		offsetX *= -1;
-		offsetZ *= -1;
-		if (offsetX > 0)
-		{
-			if(offsetX < offsetZ) offsetX++;
-			else offsetZ++;
-		}
-		
-		return findGraveLocationNoCeiling(w, OGDeathLoc, offsetX, offsetZ, ++depth);
-	}
-	
-	private static Location findGraveLocationCeiling(World w, Location OGDeathLoc, int offsetX, int offsetZ, int depth)
-	{
-		if (depth > maxDepth) return null;	// Could not find a location, sorry
-		
-		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
-		while(DeathLoc.getBlockY() <= w.getMaxHeight())	// not >= because we always need a block below
-		{
-			boolean isObstructedLoc = !DeathLoc.getBlock().getType().isAir();
-			boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
-			if (!isObstructedLoc && isObstructedBeneath)
-			{
-				// Get Block on ground
-				DeathLoc.add(0, 1, 0);
-				return DeathLoc;
-			}
-			DeathLoc.add(0, 2, 0);	// Go up first
-		}
-		
-		// Could not find above, now below
-		
-		DeathLoc = OGDeathLoc.clone().add(offsetX, -1, offsetZ);
-		while (DeathLoc.getBlockY() > w.getMinHeight())	// not >= because we always need a block below
-		{
-			boolean isObstructedLoc = !DeathLoc.getBlock().getType().isAir();
-			boolean isObstructedBeneath = !DeathLoc.subtract(0, 1, 0).getBlock().getType().isBlock();
-			if (!isObstructedLoc && isObstructedBeneath)
-			{
-				// Get Block on ground
-				DeathLoc.add(0, 1, 0);
-				return DeathLoc;
-			}
-		}
-		
-		offsetX *= -1;
-		offsetZ *= -1;
-		if (offsetX > 0)
-		{
-			if(offsetX < offsetZ) offsetX += 8;	// End islands = large
-			else offsetZ += 8;
-		}
-		
-		return findGraveLocationCeiling(w, OGDeathLoc, offsetX, offsetZ, ++depth);
-	}
-	*/

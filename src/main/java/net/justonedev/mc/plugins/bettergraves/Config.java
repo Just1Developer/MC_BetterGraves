@@ -43,7 +43,7 @@ public class Config {
 			cfg.addDefault("Messages.Death.KeepInventory is on", "&eSince KeepInventory is on, no grave was created for you.");
 			cfg.addDefault("Messages.Death.Nothing of value was lost", "&eSince you have no stuff or xp, no grave will be spawned.");
 			cfg.addDefault("Messages.Death.No grave found", "&cAlert: Could not find a location to set your grave, your items have been dropped like normal!");
-			cfg.addDefault("Messages.Death.Grave created at", "&7Your grave has been created at &c%location%&7. The access protection expires in %minutes% minutes.");
+			cfg.addDefault("Messages.Death.Grave created at", "&7Your grave was created at &c%location%&7. The access protection expires in %minutes% minutes.");
 			cfg.addDefault("Messages.Expiration.Grave expires in minutes", "&cWarning: &7Your grave at &c%location%&7 will lose protection in around &e%minutes% &7minutes.");
 			cfg.addDefault("Messages.Expiration.Grave expires in one minute", "&cWarning: &7Your grave at &c%location%&7 will lose protection in around &e1 &7minute.");
 			cfg.addDefault("Messages.Expiration.Grave expired", "&cWarning: &7The protection of your grave at &c%location%&7 has expired.");
@@ -84,7 +84,7 @@ public class Config {
 		MSG_KEEP_INVENTORY_ON = getString(f, cfg, "Messages.Death.KeepInventory is on", "&eSince KeepInventory is on, no grave was created for you.");
 		MSG_PLAYER_HAS_NOTHING = getString(f, cfg, "Messages.Death.Nothing of value was lost", "&eSince you have no stuff or xp, no grave will be spawned.");
 		MSG_NO_GRAVE_LOC_FOUND = getString(f, cfg, "Messages.Death.No grave found", "&cAlert: Could not find a location to set your grave, your items have been dropped like normal!");
-		MSG_GRAVE_CREATED_AT = getString(f, cfg, "Messages.Death.Grave created at", "&7Your grave has been created at &c%location%&7. The access protection expires in %minutes% minutes.");
+		MSG_GRAVE_CREATED_AT = getString(f, cfg, "Messages.Death.Grave created at", "&7Your grave was created at &c%location%&7. The access protection expires in %minutes% minutes.");
 		MSG_GRAVE_EXPIRES_MINUTES = getString(f, cfg, "Messages.Expiration.Grave expires in minutes", "&cWarning: &7Your grave at &c%location%&7 will lose protection in around &e%minutes% &7minutes.");
 		MSG_GRAVE_EXPIRES_MINUTE = getString(f, cfg, "Messages.Expiration.Grave expires in one minute", "&cWarning: &7Your grave at &c%location%&7 will lose protection in around &e1 &7minute.");
 		MSG_GRAVE_EXPIRED = getString(f, cfg, "Messages.Expiration.Grave expired", "&cWarning: &7The protection of your grave at &c%location%&7 has expired.");
