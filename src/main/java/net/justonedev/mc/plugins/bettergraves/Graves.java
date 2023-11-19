@@ -163,7 +163,8 @@ public class Graves implements Listener {
 	
 	private static Location findGraveLocationNoCeiling(World w, Location OGDeathLoc)
 	{
-		Location loc = findGraveLocationNoCeilingSearchPillar(w, OGDeathLoc, 0, 0);
+		// This is not an error. For the pillar the player died in, we use the Ceiling method to start where the player died, not at max height. For all other searches in here, we start at the top.
+		Location loc = findGraveLocationSearchPillarAboveOnly(w, OGDeathLoc, 0, 0);
 		if(loc != null) return loc;
 		
 		int offsetX = 1, offsetZ = 1;
@@ -190,7 +191,8 @@ public class Graves implements Listener {
 	private static Location findGraveLocationNoCeilingSearchPillar(World w, Location OGDeathLoc, int offsetX, int offsetZ)
 	{
 		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
-		DeathLoc.setY(w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT);		// Adjust height accordingly
+		DeathLoc.setY(w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT);	// Adjust height accordingly. Not inline because that uses an 'add'
+		Bukkit.broadcastMessage("§cDEBUG >> NoCeiling Pillar called. DeathLoc: " + DeathLoc);
 		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT)	// Offset for min height
 		{
 			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
@@ -224,14 +226,23 @@ public class Graves implements Listener {
 		return null;
 	}
 	
-	private static Location findGraveLocationCeilingSearchPillar(World w, Location OGDeathLoc, int offsetX, int offsetZ)
+	private static Location findGraveLocationSearchPillarAboveOnly(World w, Location OGDeathLoc, int offsetX, int offsetZ)
 	{
 		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
-		while(DeathLoc.getBlockY() <= w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT)	// not >= because we always need a block below
+		Bukkit.broadcastMessage("§bDEBUG >> YesCeiling Pillar called. DeathLoc: " + DeathLoc);
+		while(DeathLoc.getBlockY() <= w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT)	// offset because world max height funny
 		{
 			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
 			DeathLoc.add(0, 2, 0);	// Go up first
 		}
+		
+		return null;
+	}
+	
+	private static Location findGraveLocationCeilingSearchPillar(World w, Location OGDeathLoc, int offsetX, int offsetZ)
+	{
+		Location DeathLoc = findGraveLocationSearchPillarAboveOnly(w, OGDeathLoc, offsetX, offsetZ);
+		if(DeathLoc != null) return DeathLoc;
 		
 		// Could not find above, now below
 		
@@ -246,7 +257,10 @@ public class Graves implements Listener {
 	
 	private static boolean pillarCeilingObstructionCheck(Location deathLoc) {
 		boolean isObstructedLoc = !deathLoc.getBlock().getType().isAir();
+		Bukkit.broadcastMessage("DEBUG >> Height: " + deathLoc.getY() + " - isObstructedLoc: " + isObstructedLoc + " / Type: §c" + deathLoc.getBlock().getType() + "§f | AIR? >> §e" + deathLoc.getBlock().getType().isAir());
 		boolean isObstructedBeneath = !deathLoc.subtract(0, 1, 0).getBlock().getType().isAir();
+		Bukkit.broadcastMessage("DEBUG >> Height: " + deathLoc.getY() + " - isObstructedBeneath: " + isObstructedBeneath + " / Type: §c" + deathLoc.getBlock().getType() + "§f | AIR? >> §e" + deathLoc.getBlock().getType().isAir());
+		Bukkit.broadcastMessage("DEBUG >> ");
 		if (!isObstructedLoc && isObstructedBeneath)
 		{
 			// Get Block on ground
