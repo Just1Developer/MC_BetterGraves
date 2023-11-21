@@ -31,7 +31,7 @@ public class Config {
 			cfg.addDefault("Grave protection expires", true);
 			cfg.addDefault("Grave protection time (minutes)", 15);
 			cfg.addDefault("Maximum Search Range", 700);
-			cfg.addDefault("Purge Command wipes graves older than x hours:", 31);
+			cfg.addDefault("Purge Command wipes graves older than x hours", 31);
 			
 			cfg.addDefault("Permissions.Bypass grave protection", "graves.breakOther");
 			cfg.addDefault("Permissions.Purge old graves", "graves.purge");
@@ -48,7 +48,7 @@ public class Config {
 			cfg.addDefault("Messages.Expiration.Grave expires in one minute", "&cWarning: &7Your grave at &c%location%&7 will lose protection in around &e1 &7minute.");
 			cfg.addDefault("Messages.Expiration.Grave expired", "&cWarning: &7The protection of your grave at &c%location%&7 has expired.");
 			cfg.addDefault("Messages.Purge.No permissions", "&cSorry, your don't have permission for that!");
-			cfg.addDefault("Messages.Purge.Wiped graves", "&ePurged §c%graves% §eold graves.");
+			cfg.addDefault("Messages.Purge.Wiped graves", "&ePurged &c%graves% &eold graves.");
 			cfg.addDefault("Messages.Purge.Your grave will be purged", "&cWarning: &7Your grave at &c%location%&7 will be purged momentarily.");
 			
 			cfg.addDefault("Messages.Gravelist.Not a Player", "&cSorry, this command is for players only.");
@@ -72,7 +72,7 @@ public class Config {
 		BetterGraves.DropItemsIfInventoryFull = cfg.getBoolean("Drop Items if the Inventory is full");
 		BetterGraves.EnforceBindingCurse = cfg.getBoolean("Enforce (Re-equip) Curse of Binding instead of currently worn armor");
 		BetterGraves.MaxRange = cfg.getInt("Maximum Search Range");
-		BetterGraves.GravePurgeOlderThanMS = cfg.getInt("Maximum Search Range") * 3600000L;
+		BetterGraves.GravePurgeOlderThanMS = cfg.getInt("Purge Command wipes graves older than x hours") * 3600000L;
 		
 		PERMISSION_BYPASS_GRAVE_PROT = getString(f, cfg, "Permissions.Bypass grave protection", "graves.breakOther");
 		PERMISSION_PURGE_OLD_GRAVES = getString(f, cfg, "Permissions.Purge old graves", "graves.purge");
@@ -89,7 +89,7 @@ public class Config {
 		MSG_GRAVE_EXPIRES_MINUTE = getString(f, cfg, "Messages.Expiration.Grave expires in one minute", "&cWarning: &7Your grave at &c%location%&7 will lose protection in around &e1 &7minute.");
 		MSG_GRAVE_EXPIRED = getString(f, cfg, "Messages.Expiration.Grave expired", "&cWarning: &7The protection of your grave at &c%location%&7 has expired.");
 		MSG_GRAVEPURGE_NO_PERMS = getString(f, cfg,"Messages.Purge.No permissions", "&cSorry, your don't have permission for that!");
-		MSG_GRAVEPURGE_WIPED_GRAVES = getString(f, cfg, "Messages.Purge.Wiped graves", "&ePurged §c%graves% §eold graves.");
+		MSG_GRAVEPURGE_WIPED_GRAVES = getString(f, cfg, "Messages.Purge.Wiped graves", "&ePurged &c%graves% &eold graves.");
 		MSG_YOUR_GRAVE_WILL_BE_PURGED = getString(f, cfg, "Messages.Purge.Your grave will be purged", "&cWarning: &7Your grave at &c%location%&7 will be purged momentarily.");
 		
 		MSG_LIST_NOPLAYER = getString(f, cfg, "Messages.Gravelist.Not a Player", "&cSorry, this command is for players only.");
