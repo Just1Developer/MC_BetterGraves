@@ -72,7 +72,8 @@ public class Config {
 		BetterGraves.DropItemsIfInventoryFull = cfg.getBoolean("Drop Items if the Inventory is full");
 		BetterGraves.EnforceBindingCurse = cfg.getBoolean("Enforce (Re-equip) Curse of Binding instead of currently worn armor");
 		BetterGraves.MaxRange = cfg.getInt("Maximum Search Range");
-		BetterGraves.GravePurgeOlderThanMS = cfg.getInt("Purge Command wipes graves older than x hours") * 3600000L;
+		int hours = cfg.getInt("Purge Command wipes graves older than x hours");
+		BetterGraves.GravePurgeOlderThanMS = (hours == 0 ? 31 : hours) * 3600000L;
 		
 		PERMISSION_BYPASS_GRAVE_PROT = getString(f, cfg, "Permissions.Bypass grave protection", "graves.breakOther");
 		PERMISSION_PURGE_OLD_GRAVES = getString(f, cfg, "Permissions.Purge old graves", "graves.purge");
