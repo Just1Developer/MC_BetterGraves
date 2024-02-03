@@ -37,9 +37,17 @@ public class Grave {
 		this.CreationTime = CreationTime == 0 ? System.currentTimeMillis() : CreationTime;
 	}
 	
+	/**
+	 * Loads a grave from its file.
+	 * Returns null if the file does not exist.
+	 *
+	 * @param uuid The grave uuid
+	 * @return The loaded grave or null
+	 */
 	public static Grave load(String uuid)
 	{
 		File f = new File(BetterGraves.instance.getDataFolder() + "/graves/", uuid + ".yml");
+		if (!f.exists()) return null;
 		YamlConfiguration cfg = YamlConfiguration.loadConfiguration(f);
 		
 		String WorldUID = cfg.getString("Location.WorldUUID");
@@ -53,7 +61,7 @@ public class Grave {
 		Inventory inv = Bukkit.createInventory(null, 45);//cfg.getInt("Inventory.size"));
 		for (int i = 0; i < inv.getSize(); i++)
 		{
-			inv.setItem(i, cfg.getItemStack("Inventory.slots." + i));
+			inv.setItem(i, cfg.getItemStack("Inventory.slot." + i));
 		}
 		
 		int DroppedExp = cfg.getInt("DroppedExp");

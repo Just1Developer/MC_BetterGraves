@@ -10,7 +10,7 @@ import static net.justonedev.mc.plugins.bettergraves.BetterGraves.GraveLifetimeM
 
 public class Config {
 	
-	public static String PERMISSION_BYPASS_GRAVE_PROT, PERMISSION_PURGE_OLD_GRAVES, PERMISSION_VIEWLIST_OTHER;
+	public static String PERMISSION_BYPASS_GRAVE_PROT, PERMISSION_PURGE_OLD_GRAVES, PERMISSION_VIEWLIST_OTHER, PERMISSION_RECOVERGRAVE;
 	public static String MSG_NOT_YOUR_GRAVE;
 	public static String MSG_ITEMS_NOT_RECOVERED_1_TO_1, MSG_SOME_ITEMS_DROPPED, MSG_ITEMS_LEFTOVER_IN_GRAVE;
 	public static String MSG_KEEP_INVENTORY_ON, MSG_PLAYER_HAS_NOTHING, MSG_NO_GRAVE_LOC_FOUND, MSG_GRAVE_CREATED_AT;
@@ -18,6 +18,9 @@ public class Config {
 	public static String MSG_GRAVEPURGE_NO_PERMS, MSG_GRAVEPURGE_WIPED_GRAVES, MSG_YOUR_GRAVE_WILL_BE_PURGED;
 	public static String MSG_LIST_NOPLAYER, MSG_LIST_NOPERMS, MSG_LIST_PLAYERNOTONLINE, MSG_LIST_INVALID_UUID,
 			MSG_LIST_NOGRAVES_SELF, MSG_LIST_NOGRAVES_OTHER, MSG_LIST_GRAVELIST_SELF, MSG_LIST_GRAVELIST_OTHER, MSG_LIST_FORMAT;
+	public static String MSG_GRAVERECOVER_NOPERMS, MSG_YOU_HAVE_MAIL, MSG_YOU_HAVE_FURTHER_MAIL, MSG_RECOVER_RECOVER_SUCCESS_SENDER, MSG_RECOVER_RECOVER_SUCCESS_RECEIVER,
+			MSG_RECOVER_RECEIVER_EXPLANATION, MSG_RECOVER_OVERRIDE_EXPLANATION, MSG_RECOVER_GRAVE_NOT_FOUND,
+			MSG_RECOVER_PLAYER_OFFLINE_YES_OVERRIDE, MSG_RECOVER_PLAYER_OFFLINE_NO_OVERRIDE, MSG_RECOVER_CONSOLESENDER_NO_WORLD;
 	
 	public static void Load()
 	{
@@ -61,6 +64,17 @@ public class Config {
 			cfg.addDefault("Messages.Gravelist.GraveList - Other", "&eAll of %name%%suffix% current graves:");
 			cfg.addDefault("Messages.Gravelist.GraveListing Format", "&7 >> &e%location%&7: &c%itemcount% &7Items | Time left: &a%time%");
 			
+			cfg.addDefault("Messages.RecoverCommand.No permission", "&cSorry, you don't have permission to recover graves");
+			cfg.addDefault("Messages.RecoverCommand.Care package received", "&eYou received the contents of a grave while you were offline. The contents were added to your inventory.");
+			cfg.addDefault("Messages.RecoverCommand.Not all contents of package delivered", "&eYou still have some more items waiting for you on your next join.");
+			cfg.addDefault("Messages.RecoverCommand.Recovery successful.sender", "&aSuccess! &7Grave recovery complete.");
+			cfg.addDefault("Messages.RecoverCommand.Recovery successful.receiver", "&7You received some items from a grave that was recovered.");
+			cfg.addDefault("Messages.RecoverCommand.Receiver explanation", "&7The receiver of the items, by name. If the receiver is not specified, items will go to the grave's owner by default.");
+			cfg.addDefault("Messages.RecoverCommand.Override explanation", "&7With &e-override&7, the player will receive the items upon joining. &cThis can lead to unexpected behaviour if the receiver is specified and changes his name before joining.");
+			cfg.addDefault("Messages.RecoverCommand.Grave not found", "&cCouldn't find the grave you're looking for.");
+			cfg.addDefault("Messages.RecoverCommand.Player is not online", "&cThe player you're looking for is not online. If you still want to provide the items, use the &e-override &ckey.");
+			cfg.addDefault("Messages.RecoverCommand.Grave for offline player recovered", "&aSuccess! &7The player you're looking for is not online, so they'll get their items the next time they join.");
+			
 			try {
 				cfg.save(f);
 			} catch (IOException ignored) { }
@@ -103,6 +117,17 @@ public class Config {
 		MSG_LIST_GRAVELIST_OTHER = getString(f, cfg, "Messages.Gravelist.GraveList - Other", "&eAll of %name%%suffix% current graves:");
 		MSG_LIST_FORMAT = getString(f, cfg, "Messages.Gravelist.GraveListing Format", "&7 >> &e%location%&7: &c%itemcount% &7Items | Time left: &a%time%");
 		
+		MSG_GRAVERECOVER_NOPERMS = getString(f, cfg, "Messages.RecoverCommand.No permission", "&cSorry, you don't have permission to recover graves");
+		MSG_YOU_HAVE_MAIL = getString(f, cfg, "Messages.RecoverCommand.Care package received", "&eYou received the contents of a grave while you were offline. The contents were added to your inventory.");
+		MSG_YOU_HAVE_FURTHER_MAIL = getString(f, cfg, "Messages.RecoverCommand.Not all contents of package delivered", "&eYou still have some more items waiting for you on your next join.");
+		MSG_RECOVER_RECOVER_SUCCESS_SENDER = getString(f, cfg, "Messages.RecoverCommand.Recovery successful.sender", "&aSuccess! &7Grave recovery complete.");
+		MSG_RECOVER_RECOVER_SUCCESS_RECEIVER = getString(f, cfg, "Messages.RecoverCommand.Recovery successful.receiver", "&7You received some items from a grave that was recovered.");
+		MSG_RECOVER_RECEIVER_EXPLANATION = getString(f, cfg, "Messages.RecoverCommand.Receiver explanation", "&7The receiver of the items, by name. If the receiver is not specified, items will go to the grave's owner by default.");
+		MSG_RECOVER_OVERRIDE_EXPLANATION = getString(f, cfg, "Messages.RecoverCommand.Override explanation", "&7With &e-override&7, the player will receive the items upon joining. &cThis can lead to unexpected behaviour if the receiver is specified and changes his name before joining.");
+		MSG_RECOVER_GRAVE_NOT_FOUND = getString(f, cfg, "Messages.RecoverCommand.Grave not found", "&cCouldn't find the grave you're looking for.");
+		MSG_RECOVER_PLAYER_OFFLINE_NO_OVERRIDE = getString(f, cfg, "Messages.RecoverCommand.Player is not online", "&cThe player you're looking for is not online. If you still want to provide the items, use the &e-override &ckey.");
+		MSG_RECOVER_CONSOLESENDER_NO_WORLD = getString(f, cfg, "Messages.RecoverCommand.Cant pinpoint world", "&cCan't pinpoint world when executing from the console. Please specify an online player as receiver to pinpoint to grave's world. Receiver must be in the same world as the player.");
+		MSG_RECOVER_PLAYER_OFFLINE_YES_OVERRIDE = getString(f, cfg, "Messages.RecoverCommand.Grave for offline player recovered", "&aSuccess! &7The player you're looking for is not online, so they'll get their items the next time they join.");
 	}
 	
 	public static String getString(File f, YamlConfiguration cfg, String path, String fallback)

@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -42,9 +43,11 @@ public final class BetterGraves extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new Graves(), this);
 		
 		Config.Load();
+		CarePackage.Init();
 		
 		getCommand("purgeoldgraves").setExecutor(this);
 		getCommand("gravelist").setExecutor(new Gravelist());
+		getCommand("recovergrave").setExecutor(new Cmd_recoverGrave());
 		
 		// Load all graves. Since they aren't changed and only created once somewhere else, there is no need to export them on shutdown
 		File folder = new File(getDataFolder() + "/graves/");
@@ -54,9 +57,45 @@ public final class BetterGraves extends JavaPlugin implements Listener {
 		for (File f : files)
 		{
 			Grave grave = Grave.load(f.getName().substring(0, f.getName().length() - 4));
+			if (grave == null) continue;
 			Graves.put(grave.Location, grave);
 		}
 		GraveExpiration.startScheduler();
+	}
+	
+	/**
+	 * Gets a grave by its location.
+	 * Returns null if there is currently no grave at the given location.
+	 *
+	 * @param location The grave location
+	 * @return The grave object or null
+	 */
+	public static Grave getGrave(final Location location) {
+		Location loc = floor(location);
+		if (Graves.containsKey(loc)) {
+			return Graves.get(loc);
+		}
+		return null;
+	}
+	
+	@EventHandler
+	public void onJoin(PlayerJoinEvent e) {
+		if (!CarePackage.CarePackageFileNames.contains(e.getPlayer().getName())
+		&& !CarePackage.CarePackageFileNames.contains(e.getPlayer().getUniqueId().toString())) return;
+		
+		if (CarePackage.CarePackageFileNames.contains(e.getPlayer().getName())) {
+			CarePackage pkg = CarePackage.loadFromFile(e.getPlayer().getName());
+			if (pkg != null) {
+				e.getPlayer().sendMessage(Config.MSG_YOU_HAVE_MAIL);
+				pkg.Collect(e.getPlayer());
+			}
+		}
+		if (CarePackage.CarePackageFileNames.contains(e.getPlayer().getUniqueId().toString())) {
+			CarePackage pkg = CarePackage.loadFromFile(e.getPlayer().getUniqueId().toString());
+			if (pkg == null) return;
+			e.getPlayer().sendMessage(Config.MSG_YOU_HAVE_MAIL);
+			pkg.Collect(e.getPlayer());
+		}
 	}
 	
 	@EventHandler
