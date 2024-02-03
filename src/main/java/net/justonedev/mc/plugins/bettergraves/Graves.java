@@ -25,6 +25,14 @@ public class Graves implements Listener {
 
 	private static final int OFFSET_WORLDLOC_MAXHEIGHT = 1;	// Subtract 1 because world max height is 1 more than build height
 	private static final int OFFSET_WORLDLOC_MINHEIGHT = 2;	// Add 2, +1 because we check the block underneath too and +1 because we want to leave the lowest bedrock layer (always obstructed) alone (not consider it)
+	/**
+	 * So graves don't spawn too low, graves must be at most this much deeper than the OG grave location.
+	 */
+	private static final int MINIMUM_HEIGHT_DELTA = 25;
+	/**
+	 * This effect should only happen in close proximity to the place of death.
+	 */
+	private static final int MAX_RADIUS_SQUARED_MINIMUM_HEIGHT_EFFECT = 75;
 	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e)
@@ -192,7 +200,7 @@ public class Graves implements Listener {
 	{
 		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
 		DeathLoc.setY(w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT);	// Adjust height accordingly. Not inline because that uses an 'add'
-		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT)	// Offset for min height
+		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT + getWorldMinimumHeightOffset(OGDeathLoc.getBlockY(), offsetX, offsetZ))	// Offset for min height
 		{
 			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
 		}
@@ -228,6 +236,8 @@ public class Graves implements Listener {
 	private static Location findGraveLocationSearchPillarAboveOnly(World w, Location OGDeathLoc, int offsetX, int offsetZ)
 	{
 		Location DeathLoc = OGDeathLoc.clone().add(offsetX, 0, offsetZ);
+		// Here it's okay to still have this because otherwise offset is 0.
+		if (getWorldMinimumHeightOffset(OGDeathLoc.getBlockY(), offsetX, offsetZ) != 0) DeathLoc.setY(Math.max(w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT, OGDeathLoc.getBlockY() - MINIMUM_HEIGHT_DELTA));
 		while(DeathLoc.getBlockY() <= w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT)	// offset because world max height funny
 		{
 			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
@@ -245,12 +255,18 @@ public class Graves implements Listener {
 		// Could not find above, now below
 		
 		DeathLoc = OGDeathLoc.clone().add(offsetX, -1, offsetZ);
-		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT)
+		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT + getWorldMinimumHeightOffset(OGDeathLoc.getBlockY(), offsetX, offsetZ))
 		{
 			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
 		}
 		
 		return null;
+	}
+	
+	private static int getWorldMinimumHeightOffset(int OG_LocY, int offsetX, int offsetZ) {
+		// If it's close enough
+		if (Math.pow(offsetX, 2) + Math.pow(offsetZ, 2) <= MAX_RADIUS_SQUARED_MINIMUM_HEIGHT_EFFECT) return (OG_LocY - MINIMUM_HEIGHT_DELTA);
+		return 0;
 	}
 	
 	private static boolean pillarCeilingObstructionCheck(Location deathLoc) {

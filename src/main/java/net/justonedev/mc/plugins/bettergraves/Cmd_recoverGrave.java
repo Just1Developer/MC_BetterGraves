@@ -33,7 +33,7 @@ public class Cmd_recoverGrave implements CommandExecutor {
 		//   -> Receiver is the one who receives the items
 		//   -> If no receiver is specified, the grave owner will be selected as receiver.
 		//      If the grave owner is not online, the player will either receive the items upon joining, or
-		//		an error message will be sent to the command sender. // Todo decide / make decidable in config
+		//		an error message will be sent to the command sender.
 		//		If the receiver is specified, the player must be online to receive the items.
 		
 		/*
