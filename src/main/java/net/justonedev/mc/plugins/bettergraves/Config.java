@@ -39,6 +39,7 @@ public class Config {
 			cfg.addDefault("Permissions.Bypass grave protection", "graves.breakOther");
 			cfg.addDefault("Permissions.Purge old graves", "graves.purge");
 			cfg.addDefault("Permissions.View other's graves", "graves.listother");
+			cfg.addDefault("Permissions.Recover command", "graves.recover");
 			cfg.addDefault("Messages.GraveRecovery.Not your grave", "&cThis grave is not yours! You need to wait until it expires.");
 			cfg.addDefault("Messages.GraveRecovery.Items not recovered 1 to 1", "&7Some items might not be where they were previously stored.");
 			cfg.addDefault("Messages.GraveRecovery.Some items were dropped", "&cWarning: &7Some items have been dropped.");
@@ -92,6 +93,7 @@ public class Config {
 		PERMISSION_BYPASS_GRAVE_PROT = getString(f, cfg, "Permissions.Bypass grave protection", "graves.breakOther");
 		PERMISSION_PURGE_OLD_GRAVES = getString(f, cfg, "Permissions.Purge old graves", "graves.purge");
 		PERMISSION_VIEWLIST_OTHER = getString(f, cfg, "Permissions.View other's graves", "graves.listother");
+		PERMISSION_RECOVERGRAVE = getString(f, cfg, "Permissions.Recover command", "graves.recover");
 		MSG_NOT_YOUR_GRAVE = getString(f, cfg, "Messages.GraveRecovery.Not your grave", "&cThis grave is not yours! You need to wait until it expires.");
 		MSG_ITEMS_NOT_RECOVERED_1_TO_1 = getString(f, cfg, "Messages.GraveRecovery.Items not recovered 1 to 1", "&7Some items might not be where they were previously stored.");
 		MSG_SOME_ITEMS_DROPPED = getString(f, cfg, "Messages.GraveRecovery.Some items were dropped", "&cWarning: &7Some items have been dropped.");
