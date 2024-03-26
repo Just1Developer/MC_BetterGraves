@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import static net.justonedev.mc.plugins.bettergraves.BetterGraves.GraveLifetimeMinutes;
 import static net.justonedev.mc.plugins.bettergraves.BetterGraves.MaxRange;
@@ -37,6 +39,12 @@ public class Graves implements Listener {
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e)
 	{
+		Player p = e.getEntity();
+		Block eyeLoc = p.getEyeLocation().getBlock();
+		Block locBlock = p.getLocation().getBlock();
+		p.sendMessage("§9DEBUG: Block your loc: " + locBlock.getType() + ", eye: " + eyeLoc.getType());
+		p.sendMessage("§9DEBUG: More block info: " + locBlock.getState() + ", " + locBlock.getBlockData() + ", " + locBlock.getPistonMoveReaction());
+		p.sendMessage("§9DEBUG: More eye info: " + eyeLoc.getState() + ", " + eyeLoc.getBlockData() + ", " + eyeLoc.getPistonMoveReaction());
 		if (e.getKeepInventory())
 		{
 			e.getEntity().sendMessage(Config.MSG_KEEP_INVENTORY_ON);
@@ -57,6 +65,7 @@ public class Graves implements Listener {
 		
 		e.setDroppedExp(0);
 		e.getDrops().clear();
+		p.sendMessage("DEBUG 2: grave loc: " + grave + ", grave loc material: " + grave.getBlock().getType());
 		e.getEntity().sendMessage(Config.MSG_GRAVE_CREATED_AT.replace("%location%", grave.getBlockX() + " " + grave.getBlockY() + " " + grave.getBlockZ()).replace("%minutes%", "" + GraveLifetimeMinutes));
 	}
 	
@@ -84,6 +93,9 @@ public class Graves implements Listener {
 		}
 		
 		Grave grave = new Grave(uuid, p.getUniqueId().toString(), inv, location, droppedXP);
+		
+		p.sendMessage("§eDEBUG 1: grave loc: " + location + ", grave loc material: " + location.getBlock().getType());
+		p.sendMessage("§eDEBUG 2: isSuitable: " + isSuitableGraveLoc(location));
 		
 		location.getBlock().setType(Material.PLAYER_HEAD);
 		Skull skull = (Skull) location.getBlock().getState();
@@ -132,14 +144,14 @@ public class Graves implements Listener {
 		
 		boolean isObstructedFeet = !DeathLoc.getBlock().getType().isAir();
 		boolean isObstructedBeneath = !DeathLoc.clone().subtract(0, 1, 0).getBlock().getType().isAir();
-		if (!isObstructedFeet && isObstructedBeneath)
+		if (!isObstructedFeet && isObstructedBeneath && isSuitableGraveLoc(DeathLoc))
 		{
 			return DeathLoc;
 		}
 		// Undo subtraction
 		boolean isObstructedHead = !DeathLoc.clone().add(0, 1, 1).getBlock().getType().isAir();
 		// Feet are obstructed
-		if (!isObstructedHead)
+		if (!isObstructedHead && isSuitableGraveLoc(DeathLoc))
 		{
 			return DeathLoc;
 		}
@@ -202,7 +214,7 @@ public class Graves implements Listener {
 		DeathLoc.setY(w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT);	// Adjust height accordingly. Not inline because that uses an 'add'
 		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT + getWorldMinimumHeightOffset(OGDeathLoc.getBlockY(), offsetX, offsetZ))	// Offset for min height
 		{
-			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
+			if (pillarCeilingObstructionCheck(DeathLoc) && isSuitableGraveLoc(DeathLoc)) return DeathLoc;
 		}
 		return null;
 	}
@@ -240,7 +252,7 @@ public class Graves implements Listener {
 		if (getWorldMinimumHeightOffset(OGDeathLoc.getBlockY(), offsetX, offsetZ) != 0) DeathLoc.setY(Math.max(w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT, OGDeathLoc.getBlockY() - MINIMUM_HEIGHT_DELTA));
 		while(DeathLoc.getBlockY() <= w.getMaxHeight() - OFFSET_WORLDLOC_MAXHEIGHT)	// offset because world max height funny
 		{
-			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
+			if (pillarCeilingObstructionCheck(DeathLoc) && isSuitableGraveLoc(DeathLoc)) return DeathLoc;
 			DeathLoc.add(0, 2, 0);	// Go up first
 		}
 		
@@ -257,7 +269,7 @@ public class Graves implements Listener {
 		DeathLoc = OGDeathLoc.clone().add(offsetX, -1, offsetZ);
 		while (DeathLoc.getBlockY() >= w.getMinHeight() + OFFSET_WORLDLOC_MINHEIGHT + getWorldMinimumHeightOffset(OGDeathLoc.getBlockY(), offsetX, offsetZ))
 		{
-			if (pillarCeilingObstructionCheck(DeathLoc)) return DeathLoc;
+			if (pillarCeilingObstructionCheck(DeathLoc) && isSuitableGraveLoc(DeathLoc)) return DeathLoc;
 		}
 		
 		return null;
@@ -279,6 +291,23 @@ public class Graves implements Listener {
 			return true;
 		}
 		return false;
+	}
+	
+	// Checks the loc type and the loc type beneath
+	// Just an additional security measure
+	private static boolean isSuitableGraveLoc(Location loc) {
+		Location loc2 = loc.clone();
+		if (loc2.getBlockY() >= Objects.requireNonNull(loc2.getWorld()).getMaxHeight()) return false;
+		if (loc2.getBlockY() <= Objects.requireNonNull(loc2.getWorld()).getMinHeight()) return false;
+		
+		Block b = loc2.getBlock();
+		if (b.isLiquid()) return false;
+		if (b.getType() != Material.AIR) return false;
+		// Check block beneath
+		loc2.subtract(0, 1, 0);
+		b = loc2.getBlock();
+		// Perhaps add some stronger safeguards here
+		return !b.getType().isAir();
 	}
 	
 }
