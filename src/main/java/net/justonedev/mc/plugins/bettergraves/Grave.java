@@ -64,8 +64,9 @@ public class Grave {
 		Inventory inv = Bukkit.createInventory(null, 45);//cfg.getInt("Inventory.size"));
 		for (int i = 0; i < inv.getSize(); i++)
 		{
+			ItemStack itemStack = null;
 			try {
-				ItemStack itemStack = cfg.getItemStack("Inventory.slot." + i);
+				itemStack = cfg.getItemStack("Inventory.slot." + i);
 				if (itemStack == null) continue;
 				if (itemStack.getType() == Material.FIREWORK_ROCKET && itemStack.hasItemMeta()) {
 					// Fix the item manually
@@ -79,7 +80,7 @@ public class Grave {
 				}
 				inv.setItem(i, itemStack);
 			} catch (NullPointerException e) {
-				Bukkit.getLogger().warning("[JustOneDeveloper's BetterGraves] Could not load item " + i + " for grave " + uuid + ": NullPointerException occurred when applying attributes. This is an issue caused by Spigot / Minecraft.");
+				Bukkit.getLogger().warning("[JustOneDeveloper's BetterGraves] Could not load item " + i + " for grave " + uuid + ": NullPointerException occurred when applying attributes. This is an issue caused by Spigot / Minecraft. ItemStack was: " + itemStack);
 			}
 		}
 		
