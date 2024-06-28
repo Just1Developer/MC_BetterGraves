@@ -1,6 +1,8 @@
 package net.justonedev.mc.plugins.bettergraves;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -8,6 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +64,23 @@ public class Grave {
 		Inventory inv = Bukkit.createInventory(null, 45);//cfg.getInt("Inventory.size"));
 		for (int i = 0; i < inv.getSize(); i++)
 		{
-			inv.setItem(i, cfg.getItemStack("Inventory.slot." + i));
+			try {
+				ItemStack itemStack = cfg.getItemStack("Inventory.slot." + i);
+				if (itemStack == null) continue;
+				if (itemStack.getType() == Material.FIREWORK_ROCKET && itemStack.hasItemMeta()) {
+					// Fix the item manually
+					FireworkMeta fireworkMeta = (FireworkMeta) itemStack.getItemMeta();
+					if (fireworkMeta != null && !fireworkMeta.hasEffects()) {
+						// Add and remove an effect to assert that the firework effects list is != null
+						fireworkMeta.addEffect(FireworkEffect.builder().withColor(Color.BLACK).with(FireworkEffect.Type.CREEPER).build());
+						fireworkMeta.removeEffect(0);
+						itemStack.setItemMeta(fireworkMeta);
+					}
+				}
+				inv.setItem(i, itemStack);
+			} catch (NullPointerException e) {
+				Bukkit.getLogger().warning("[JustOneDeveloper's BetterGraves] Could not load item " + i + " for grave " + uuid + ": NullPointerException occurred when applying attributes. This is an issue caused by Spigot / Minecraft.");
+			}
 		}
 		
 		int DroppedExp = cfg.getInt("DroppedExp");
