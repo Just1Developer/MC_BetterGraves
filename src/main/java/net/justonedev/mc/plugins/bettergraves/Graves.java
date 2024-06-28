@@ -40,11 +40,6 @@ public class Graves implements Listener {
 	public void onDeath(PlayerDeathEvent e)
 	{
 		Player p = e.getEntity();
-		Block eyeLoc = p.getEyeLocation().getBlock();
-		Block locBlock = p.getLocation().getBlock();
-		p.sendMessage("§9DEBUG: Block your loc: " + locBlock.getType() + ", eye: " + eyeLoc.getType());
-		p.sendMessage("§9DEBUG: More block info: " + locBlock.getState() + ", " + locBlock.getBlockData() + ", " + locBlock.getPistonMoveReaction());
-		p.sendMessage("§9DEBUG: More eye info: " + eyeLoc.getState() + ", " + eyeLoc.getBlockData() + ", " + eyeLoc.getPistonMoveReaction());
 		if (e.getKeepInventory())
 		{
 			e.getEntity().sendMessage(Config.MSG_KEEP_INVENTORY_ON);
@@ -65,7 +60,6 @@ public class Graves implements Listener {
 		
 		e.setDroppedExp(0);
 		e.getDrops().clear();
-		p.sendMessage("DEBUG 2: grave loc: " + grave + ", grave loc material: " + grave.getBlock().getType());
 		e.getEntity().sendMessage(Config.MSG_GRAVE_CREATED_AT.replace("%location%", grave.getBlockX() + " " + grave.getBlockY() + " " + grave.getBlockZ()).replace("%minutes%", "" + GraveLifetimeMinutes));
 	}
 	
@@ -93,9 +87,6 @@ public class Graves implements Listener {
 		}
 		
 		Grave grave = new Grave(uuid, p.getUniqueId().toString(), inv, location, droppedXP);
-		
-		p.sendMessage("§eDEBUG 1: grave loc: " + location + ", grave loc material: " + location.getBlock().getType());
-		p.sendMessage("§eDEBUG 2: isSuitable: " + isSuitableGraveLoc(location));
 		
 		location.getBlock().setType(Material.PLAYER_HEAD);
 		Skull skull = (Skull) location.getBlock().getState();
